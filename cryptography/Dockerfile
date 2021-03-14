@@ -31,4 +31,4 @@ COPY --from=builder /root/*.whl .
 ENTRYPOINT ["/bin/sh"]
 
 ## docker build -t crypto .
-## docker run -it -v `pwd`/out:/root/out:rw crypto
+## docker run -it -v `pwd`/out:/root/out:rw crypto /bin/sh
