@@ -4,6 +4,7 @@ ARG OPENBLAS_VERSION='0.3.13'
 
 FROM python:${PYTHON_VERSION}-alpine as builder
 ARG NUMPY_VERSION
+ARG OPENBLAS_VERSION
 
 RUN apk add gcc gfortran musl-dev make perl linux-headers
 
@@ -13,12 +14,14 @@ RUN wget -O openblas.tar.gz https://github.com/xianyi/OpenBLAS/archive/v${OPENBL
 RUN tar xvf openblas.tar.gz && rm openblas.tar.gz && mv OpenBLAS-* openblas
 
 WORKDIR /root/openblas
-# https://github.com/slothai/docker-openblas/issues
+# https://github.com/slothai/docker-openblas
 RUN make CC=gcc FC=gfortran BINARY=64 NO_AFFINITY=1 USE_OPENMP=1
 RUN make PREFIX=/opt/openblas install
-ENV CFLAGS="-I/opt/openblas/include"
-ENV LDFLAGS="-L/opt/openblas/lib"
-RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
+
+
+#ENV CFLAGS="-I/opt/openblas/include"
+#ENV LDFLAGS="-L/opt/openblas/lib"
+#RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
 
 ## docker build -t numpy .
 ## docker run -it -v `pwd`/out:/root/out:rw numpy /bin/sh
