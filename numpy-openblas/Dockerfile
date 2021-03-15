@@ -15,13 +15,12 @@ RUN tar xvf openblas.tar.gz && rm openblas.tar.gz && mv OpenBLAS-* openblas
 
 WORKDIR /root/openblas
 # https://github.com/slothai/docker-openblas
-RUN make CC=gcc FC=gfortran BINARY=64 NO_AFFINITY=1 USE_OPENMP=1
+RUN make CC=gcc FC=gfortran BINARY=64 USE_THREAD=1 NO_AFFINITY=1 USE_OPENMP=1
 RUN make PREFIX=/opt/openblas install
 
-
-#ENV CFLAGS="-I/opt/openblas/include"
-#ENV LDFLAGS="-L/opt/openblas/lib"
-#RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
+WORKDIR /root
+COPY setup.cfg .numpy-site.cfg
+RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
 
 ## docker build -t numpy .
 ## docker run -it -v `pwd`/out:/root/out:rw numpy /bin/sh
