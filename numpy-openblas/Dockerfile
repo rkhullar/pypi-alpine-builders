@@ -22,12 +22,14 @@ WORKDIR /root
 COPY setup.cfg .numpy-site.cfg
 RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
 
-#RUN pip install auditwheel
-#RUN auditwheel show numpy-*.whl
+RUN pip install auditwheel
+ENV LD_LIBRARY_PATH=/opt/openblas/lib
+RUN auditwheel -v show numpy-*.whl
+RUN auditwheel repair --plat manylinux2010_x86_64 numpy-*.whl
 
-#FROM python:${PYTHON_VERSION}-alpine
-#WORKDIR /root
-#COPY --from=builder /root/*.whl .
+FROM python:${PYTHON_VERSION}-alpine
+WORKDIR /root
+COPY --from=builder /root/wheelhouse/*.whl .
 ENTRYPOINT ["/bin/sh"]
 
 ## docker build -t numpy .
