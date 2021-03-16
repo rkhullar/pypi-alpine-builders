@@ -6,7 +6,7 @@ FROM python:${PYTHON_VERSION}-alpine as builder
 ARG NUMPY_VERSION
 ARG OPENBLAS_VERSION
 
-RUN apk add gcc gfortran musl-dev make perl linux-headers
+RUN apk add gcc gfortran musl-dev make perl linux-headers patchelf
 
 WORKDIR /root
 RUN pip install -U pip setuptools wheel
@@ -22,9 +22,12 @@ WORKDIR /root
 COPY setup.cfg .numpy-site.cfg
 RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
 
-FROM python:${PYTHON_VERSION}-alpine
-WORKDIR /root
-COPY --from=builder /root/*.whl .
+#RUN pip install auditwheel
+#RUN auditwheel show numpy-*.whl
+
+#FROM python:${PYTHON_VERSION}-alpine
+#WORKDIR /root
+#COPY --from=builder /root/*.whl .
 ENTRYPOINT ["/bin/sh"]
 
 ## docker build -t numpy .
