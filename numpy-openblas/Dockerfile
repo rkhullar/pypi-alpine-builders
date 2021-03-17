@@ -24,7 +24,11 @@ RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
 
 # https://github.com/MacPython/numpy-wheels
 RUN pip install auditwheel
-COPY policy.json /usr/local/lib/python3.8/site-packages/auditwheel/policy/policy.json
+COPY policy.json .
+RUN PYTHON_MAJOR_MINOR=`python -c "import sys; v=sys.version_info; print(f'{v.major}.{v.minor}')"` \
+  && SITE_PACKAGES=/usr/local/lib/python${PYTHON_MAJOR_MINOR}/site-packages                        \
+  && cp policy.json ${SITE_PACKAGES}/auditwheel/policy/policy.json                                 \
+  && rm policy.json
 
 # ENV LD_LIBRARY_PATH=/opt/openblas/lib
 RUN auditwheel -v show numpy-*.whl
