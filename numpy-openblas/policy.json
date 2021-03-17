@@ -1,0 +1,11 @@
+[
+    {
+        "name": "linux",
+        "aliases": [],
+        "priority": 0,
+        "symbol_versions": {},
+        "lib_whitelist": [
+            "libc.musl-x86_64.so.1"
+        ]
+    }
+]
