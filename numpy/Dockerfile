@@ -10,5 +10,10 @@ WORKDIR /root
 RUN pip install -U pip setuptools wheel
 RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
 
+FROM python:${PYTHON_VERSION}-alpine
+WORKDIR /root
+COPY --from=builder /root/*.whl .
+ENTRYPOINT ["/bin/sh"]
+
 ## docker build -t numpy .
 ## docker run -it -v `pwd`/out:/root/out:rw numpy /bin/sh
