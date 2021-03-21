@@ -13,7 +13,7 @@ RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
 RUN pip install auditwheel
 COPY policy.json .
 RUN PYTHON_MAJOR=`python -c "import sys; v=sys.version_info; print(f'{v.major}.{v.minor}')"` \
-  && SITE_PACKAGES=/usr/local/lib/python${PYTHON_MAJOR}/site-packages                  \
+  && SITE_PACKAGES=/usr/local/lib/python${PYTHON_MAJOR}/site-packages                        \
   && cp policy.json ${SITE_PACKAGES}/auditwheel/policy/policy.json                           \
   && rm policy.json
 
