@@ -1,13 +1,15 @@
 ARG PYTHON_VERSION='3.8.8'
-ARG NUMPY_VERSION='1.20.*'
+ARG SCIPY_VERSION='1.6.*'
 
 FROM python:${PYTHON_VERSION}-alpine as builder
-ARG NUMPY_VERSION
+ARG SCIPY_VERSION
+
+RUN apk add g++ gfortran musl-dev patchelf openblas-dev lapack-dev
 
 WORKDIR /root
-RUN apk add gcc gfortran musl-dev patchelf openblas-dev lapack-dev
 RUN pip install -U pip setuptools wheel
-RUN pip wheel --no-binary :all: numpy==${NUMPY_VERSION}
+#RUN pip install https://github.com/rkhullar/pypi-alpine-wheels/blob/master/numpy/1.20.1/3.8.8/numpy-1.20.1-cp38-cp38-linux_x86_64.whl?raw=true
+RUN pip wheel --no-binary :all: scipy==${SCIPY_VERSION}
 
 # https://github.com/MacPython/numpy-wheels
 RUN pip install auditwheel
@@ -18,13 +20,14 @@ RUN PYTHON_MAJOR=`python -c "import sys; v=sys.version_info; print(f'{v.major}.{
   && rm policy.json
 
 RUN auditwheel -v show numpy-*.whl
+RUN auditwheel -v show scipy-*.whl
 RUN auditwheel repair numpy-*.whl
+RUN auditwheel repair scipy-*.whl
 
 FROM python:${PYTHON_VERSION}-alpine
 WORKDIR /root
 COPY --from=builder /root/wheelhouse/*.whl .
 ENTRYPOINT ["/bin/sh"]
 
-## docker build -t numpy .
-## docker run -it -v `pwd`/out:/root/out:rw numpy
-## docker run -it -v `pwd`/out:/root/out:rw python:3.8.8-alpine /bin/sh
+## docker build -t scipy .
+## docker run -it -v `pwd`/out:/root/out:rw scipy
